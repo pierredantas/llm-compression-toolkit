@@ -18,7 +18,7 @@ LLM compression is crucial for deploying these powerful models in CPU-based envi
   - Post-training quantization (PTQ)
   - Quantization-aware training (QAT)
   - Dynamic quantization
-  - [Mixed-precision quantization](#quantization/mixed-precision-quantization)
+  - [Mixed-precision quantization](#quantization/mixed-precision-quantization.gitkeep)
 
 - Knowledge distillation
   - Traditional knowledge distillation
