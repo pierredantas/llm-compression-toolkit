@@ -1,6 +1,5 @@
 def quantize_bert_model(model_name: str = 'bert-base-uncased', save_path: str = 'bert-quantized'):
     import torch
-    import sys
     from transformers import BertModel
     from copy import deepcopy
     
