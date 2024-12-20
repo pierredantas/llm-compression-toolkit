@@ -1,21 +1,39 @@
+import torch
 from transformers import BertTokenizer, BertForMaskedLM
 
-# Initialize tokenizer
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
-# Create MLM model from base model
-mlm_model = BertForMaskedLM.from_pretrained('bert-base-uncased')
-mlm_model.bert = model  # Use your base model
+# Initialize tokenizer and model
+def load_model_and_tokenizer():
+    """
+    Loads the BERT tokenizer and the pre-trained BERT model for Masked Language Modeling (MLM).
+    
+    Returns:
+        tokenizer (BertTokenizer): The BERT tokenizer.
+        model (BertForMaskedLM): The pre-trained BERT model for MLM.
+    """
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    model = BertForMaskedLM.from_pretrained('bert-base-uncased')
+    return tokenizer, model
 
 # Helper function for MLM predictions
-def predict_masked_word(text, model):
+def predict_masked_word(text, tokenizer, model):
+    """
+    Given a text with a masked token, predict the most likely words that can fill the mask.
+    
+    Args:
+        text (str): The input text with [MASK] token.
+        tokenizer (BertTokenizer): The BERT tokenizer.
+        model (BertForMaskedLM): The BERT model for Masked Language Modeling.
+    
+    Returns:
+        list: Top 3 predictions for the masked token with their probabilities.
+    """
     # Tokenize input
     inputs = tokenizer(text, return_tensors="pt")
     mask_token_index = torch.where(inputs["input_ids"] == tokenizer.mask_token_id)[1]
 
     # Get model predictions
     with torch.no_grad():
-        outputs = mlm_model(**inputs)
+        outputs = model(**inputs)
         predictions = outputs.logits
 
         # Get predictions for masked token
@@ -38,8 +56,7 @@ def predict_masked_word(text, model):
 
 # Test examples
 mlm_examples = [
-    # Original examples
-    "The predictions are completely [MASK].", #false
+    "The predictions are completely [MASK].",  # False
     "She plays the [MASK] beautifully in the orchestra.",  # violin, piano
     "The cat caught a [MASK] in the garden.",  # mouse, bird
     "I need to [MASK] my teeth before going to bed.",  # brush
@@ -56,10 +73,16 @@ mlm_examples = [
     "Mount Everest is the [MASK] mountain in the world."  # highest
 ]
 
+def main():
+    # Load model and tokenizer
+    tokenizer, model = load_model_and_tokenizer()
 
-print("=== Masked Language Modeling Examples (Original Model) ===")
-for i, example in enumerate(mlm_examples, 1):  # Testing first 5 examples
-    print(f"\nMLM Example {i}:")
-    print(f"Input: {example}")
-    predictions = predict_masked_word(example, model)
-    print("Top 3 predictions:", predictions)
+    print("=== Masked Language Modeling Examples ===")
+    for i, example in enumerate(mlm_examples, 1):
+        print(f"\nMLM Example {i}:")
+        print(f"Input: {example}")
+        predictions = predict_masked_word(example, tokenizer, model)
+        print("Top 3 predictions:", predictions)
+
+if __name__ == "__main__":
+    main()
