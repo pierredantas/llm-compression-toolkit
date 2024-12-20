@@ -54,8 +54,10 @@ Note: This toolkit is optimized for CPU deployment. While it can run on systems 
 
 ```bash
 git clone https://github.com/pierredantas/llm-compression-toolkit
-cd llm-compression-toolkit
-pip install -r requirements.txt
+pip install -r llm-compression-toolkit/requirements.txt
+
+import sys
+sys.path.append('/content/llm-compression-toolkit')
 ```
 
 ## Usage
@@ -63,18 +65,9 @@ pip install -r requirements.txt
 Each compression technique is organized in its own directory with specific documentation and examples. Here's a quick example of using quantization:
 
 ```python
-from llm_compression import quantize
+from quantization.MixedPrecisionQuantization.mixed_precision_quantization import quantize_bert_model
 
-# Load your model
-model = load_model("your-model")
-
-# Apply 8-bit quantization
-quantized_model = quantize(
-    model,
-    bits=8,
-    method="dynamic",
-    optimize_for="memory"
-)
+quantized_model = quantize_bert_model(model_name='bert-base-uncased', save_path='bert-quantized')
 ```
 
 ## Directory Structure
