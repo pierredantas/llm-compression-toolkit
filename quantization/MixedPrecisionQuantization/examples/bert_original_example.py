@@ -1,3 +1,5 @@
+from transformers import BertTokenizer, BertForMaskedLM
+
 # Initialize tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
