@@ -1,6 +1,9 @@
 import torch
 from transformers import BertTokenizer, BertForMaskedLM
 
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppresses most warnings and info logs
+
 # Initialize tokenizer and model
 def load_model_and_tokenizer():
     """
