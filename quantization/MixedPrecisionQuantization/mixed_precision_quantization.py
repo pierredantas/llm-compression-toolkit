@@ -31,4 +31,27 @@ def quantize_bert_model(model_name: str = 'bert-base-uncased', save_path: str = 
     quantized_model.save_pretrained(save_path)
     print(f"Quantized model saved to {save_path}")
 
+    # MORE STATISTICS
+# Before quantization
+print("\nBEFORE QUANTIZATION")
+print("-" * 50)
+embedding_name = "embeddings.word_embeddings.weight"
+param = dict(model.named_parameters())[embedding_name]
+print(f"Shape: {param.shape}")
+print(f"Dtype: {param.dtype}")
+print(f"All values:\n{param}")
+print(f"\nMin value: {param.min()}")
+print(f"Max value: {param.max()}")
+print(f"Number of unique values: {len(torch.unique(param))}")
+
+print("\nAFTER QUANTIZATION")
+print("-" * 50)
+param = dict(quantized_model.named_parameters())[embedding_name]
+print(f"Shape: {param.shape}")
+print(f"Dtype: {param.dtype}")
+print(f"All values:\n{param}")
+print(f"\nMin value: {param.min()}")
+print(f"Max value: {param.max()}")
+print(f"Number of unique values: {len(torch.unique(param))}")
+
     return quantized_model
