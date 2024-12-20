@@ -1,2 +1,1 @@
-torch
-transformers
+echo "torch\ntransformers" > requirements.txt
