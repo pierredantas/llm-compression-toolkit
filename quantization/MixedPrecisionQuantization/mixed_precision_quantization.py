@@ -1,57 +1,46 @@
-def quantize_bert_model(model_name: str = 'bert-base-uncased', save_path: str = 'bert-quantized'):
-    import torch
-    from transformers import BertModel
-    from copy import deepcopy
-    
-    def count_parameters(model):
-        return sum(p.numel() for p in model.parameters())
-    
-    def calculate_model_size(model):
-        param_size = sum(p.nelement() * p.element_size() for p in model.parameters())
-        buffer_size = sum(b.nelement() * b.element_size() for b in model.buffers())
-        return param_size + buffer_size
+from transformers import AutoModel
 
-    # Load the pre-trained BERT model
-    model = BertModel.from_pretrained(model_name)
+# Utility functions for metrics and testing
+from utils.metrics import calculate_compression_ratio, calculate_reduction_rate, count_parameters, calculate_model_size, analyze_parameter_distribution
+from utils.print_utils import print_before_quantization, print_after_quantization, print_statistics
+from quantization.quantize_model import quantize_model
 
-    # Create a quantized version of the model
-    quantized_model = deepcopy(model)
-    for name, param in quantized_model.named_parameters():
-        if param.dtype == torch.float32 and 'weight' in name:
-            param.data = param.data.to(torch.bfloat16)
+class MixedPrecisionQuantizer:
+    """Class for mixed-precision quantization of models."""
 
-    # Print reduction statistics
-    original_size = calculate_model_size(model)
-    quantized_size = calculate_model_size(quantized_model)
-    reduction_rate = (1 - quantized_size / original_size) * 100
+    def __init__(self, model):
+        self.model = model
+        self.original_size = calculate_model_size(model)
 
-    print(f"Reduction Rate: {reduction_rate:.2f}%")
-    
+    def quantize(self):
+        """Apply mixed-precision quantization to the model."""
+        self.model = quantize_model(self.model)
+        self.quantized_size = calculate_model_size(self.model)
+
+    def report_statistics(self):
+        """Report statistics pre- and post-quantization."""
+        reduction_rate, reduction_times = calculate_reduction_rate(self.original_size, self.quantized_size)
+        print_statistics(self.original_size, self.quantized_size, (reduction_rate, reduction_times))
+
+if __name__ == "__main__":
+    # Load a pre-trained model (generalized for any model, not just BERT)
+    model_name = "bert-base-uncased"  # Replaceable with any model name
+    model = AutoModel.from_pretrained(model_name)
+
+    # Print the dtype of the model's parameters before quantization
+    print_before_quantization(model)
+
+    # Initialize the quantizer
+    quantizer = MixedPrecisionQuantizer(model)
+
+    # Perform quantization
+    quantizer.quantize()
+
+    # Print the dtype of the quantized model's parameters after quantization
+    print_after_quantization(quantizer.model)
+
+    # Report statistics
+    quantizer.report_statistics()
+
     # Save the quantized model
-    quantized_model.save_pretrained(save_path)
-    print(f"Quantized model saved to {save_path}")
-
-    # MORE STATISTICS
-    # Before quantization
-    print("\nBEFORE QUANTIZATION")
-    print("-" * 50)
-    embedding_name = "embeddings.word_embeddings.weight"
-    param = dict(model.named_parameters())[embedding_name]
-    print(f"Shape: {param.shape}")
-    print(f"Dtype: {param.dtype}")
-    print(f"All values:\n{param}")
-    print(f"\nMin value: {param.min()}")
-    print(f"Max value: {param.max()}")
-    print(f"Number of unique values: {len(torch.unique(param))}")
-    
-    print("\nAFTER QUANTIZATION")
-    print("-" * 50)
-    param = dict(quantized_model.named_parameters())[embedding_name]
-    print(f"Shape: {param.shape}")
-    print(f"Dtype: {param.dtype}")
-    print(f"All values:\n{param}")
-    print(f"\nMin value: {param.min()}")
-    print(f"Max value: {param.max()}")
-    print(f"Number of unique values: {len(torch.unique(param))}")
-
-    return quantized_model
+    quantizer.model.save_pretrained('bert-base-uncased-fp16')
