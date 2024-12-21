@@ -1,3 +1,6 @@
+import torch
+from transformers import BertTokenizer, BertForMaskedLM
+
 # Create MLM model from base model
 mlm_model = BertForMaskedLM.from_pretrained('bert-base-uncased')
 
