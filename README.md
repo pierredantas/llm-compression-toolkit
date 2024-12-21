@@ -71,10 +71,9 @@ llm-compression-toolkit/
 │   ├── ptq/
 │   ├── qat/
 │   └── dynamic/
+│   └── mixed_precision/
 ├── distillation/
 ├── decomposition/
-├── examples/
-├── tests/
 ├── fourier/
 │   ├── fft/
 │   ├── spectral/
