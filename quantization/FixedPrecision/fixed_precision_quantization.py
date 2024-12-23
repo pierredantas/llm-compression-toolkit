@@ -1,8 +1,8 @@
 from transformers import AutoModel
 
-from quantization.quantize_model import quantize_model_mixed_precision
 from utils.print_utils import (print_model_parameter_number, print_model_size, print_model_dtype, print_reduction_rate_mb,
                                print_reduction_rate_param, print_reduction_times_mb, print_reduction_times_param)
+from quantization.quantize_model import quantize_model_fixed_precision
 
 if __name__ == "__main__":
     # Load a pre-trained model (generalized for any model, not just BERT)
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     print_model_dtype(model)
 
     # Perform quantization
-    quantized_model = quantize_model_mixed_precision(model)
+    quantized_model = quantize_model_fixed_precision(model)
 
     # Print the dtype of the model's parameters AFTER quantization
     print("\nAfter quantization:")
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print_model_dtype(quantized_model)
 
     print("\nQuantization report:")
-    print("=" * 50)
+    print("="*50)
     print_reduction_rate_mb(model, quantized_model) #before/after
     print_reduction_rate_param(model, quantized_model) #before/after
     print_reduction_times_mb(model, quantized_model) #before/after

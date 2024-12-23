@@ -22,12 +22,8 @@ This script demonstrates the process of **mixed-precision-weight-only quantizati
 ```bash
 git clone https://github.com/pierredantas/llm-compression-toolkit
 pip install -r llm-compression-toolkit/requirements.txt
-
-import sys
-sys.path.append('/content/llm-compression-toolkit')
-from quantization.MixedPrecisionQuantization.mixed_precision_quantization import quantize_bert_model
 ```
 ## Quantize the default BERT model and save the quantized version
 ```bash
-quantized_model = quantize_bert_model(model_name='bert-base-uncased', save_path='bert-quantized')
+python mixed_precision_quantization
 ```

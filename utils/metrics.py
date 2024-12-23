@@ -7,11 +7,11 @@ def calculate_model_size(model):
     for param in model.parameters():
         param_size += param.nelement() * param.element_size()
 
-    buffer_size = 0
-    for buffer in model.buffers():
-        buffer_size += buffer.nelement() * buffer.element_size()
+#    buffer_size = 0
+#    for buffer in model.buffers():
+#        buffer_size += buffer.nelement() * buffer.element_size()
 
-    size_all_mb = (param_size + buffer_size)
+    size_all_mb = param_size # + buffer_size
     return size_all_mb
 
 def calculate_reduction_rate_mb(before_model, after_model):

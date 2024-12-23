@@ -1,7 +1,7 @@
 import torch
 from copy import deepcopy
 
-def quantize_model(model):
+def quantize_model_mixed_precision(model):
 
     #Create a copy of the model for quantization
     quantized_model = deepcopy(model)
@@ -13,5 +13,18 @@ def quantize_model(model):
 
     #Save the quantized model
     quantized_model.save_pretrained('bert-base-uncased-mixed-precision')
+
+    return quantized_model
+
+def quantize_model_fixed_precision(model):
+
+    #Create a copy of the model for quantization
+    quantized_model = deepcopy(model)
+
+    # Convert activations and biases as well
+    quantized_model.half()
+
+    #Save the quantized model
+    quantized_model.save_pretrained('bert-base-uncased-fixed-precision')
 
     return quantized_model
