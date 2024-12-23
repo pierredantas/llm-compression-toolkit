@@ -1,16 +1,17 @@
 import torch
+from copy import deepcopy
 
 def quantize_model(model):
-    """
-    Apply BFloat16 mixed-precision quantization to the given model.
 
-    Args:
-        model (torch.nn.Module): The model to quantize.
+    #Create a copy of the model for quantization
+    quantized_model = deepcopy(model)
 
-    Returns:
-        torch.nn.Module: The quantized model.
-    """
-    model = model.to(torch.bfloat16)
-    for param in model.parameters():
-        param.data = param.data.to(torch.bfloat16)
-    return model
+    #Iterate over the quantized model's named parameters and convert the weights to BFloat16
+    for name, param in quantized_model.named_parameters():
+        if param.dtype == torch.float32 and 'weight' in name:
+            param.data = param.data.to(torch.bfloat16)
+
+    #Save the quantized model
+    quantized_model.save_pretrained('bert-base-uncased-mixed-precision')
+
+    return quantized_model

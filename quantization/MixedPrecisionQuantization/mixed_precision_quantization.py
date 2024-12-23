@@ -1,26 +1,8 @@
 from transformers import AutoModel
 
-# Utility functions for metrics and testing
-from utils.metrics import calculate_compression_ratio, calculate_reduction_rate, count_parameters, calculate_model_size, analyze_parameter_distribution
-from utils.print_utils import print_before_quantization, print_after_quantization, print_statistics
+from utils.print_utils import (print_model_parameter_number, print_model_size, print_model_dtype, print_reduction_rate_mb,
+                               print_reduction_rate_param, print_reduction_times_mb, print_reduction_times_param)
 from quantization.quantize_model import quantize_model
-
-class MixedPrecisionQuantizer:
-    """Class for mixed-precision quantization of models."""
-
-    def __init__(self, model):
-        self.model = model
-        self.original_size = calculate_model_size(model)
-
-    def quantize(self):
-        """Apply mixed-precision quantization to the model."""
-        self.model = quantize_model(self.model)
-        self.quantized_size = calculate_model_size(self.model)
-
-    def report_statistics(self):
-        """Report statistics pre- and post-quantization."""
-        reduction_rate, reduction_times = calculate_reduction_rate(self.original_size, self.quantized_size)
-        print_statistics(self.original_size, self.quantized_size, (reduction_rate, reduction_times))
 
 if __name__ == "__main__":
     # Load a pre-trained model (generalized for any model, not just BERT)
@@ -28,19 +10,24 @@ if __name__ == "__main__":
     model = AutoModel.from_pretrained(model_name)
 
     # Print the dtype of the model's parameters before quantization
-    print_before_quantization(model)
-
-    # Initialize the quantizer
-    quantizer = MixedPrecisionQuantizer(model)
+    print("\nBefore quantization:")
+    print_model_parameter_number(model)
+    print_model_size(model)
+    print_model_dtype(model)
 
     # Perform quantization
-    quantizer.quantize()
+    quantized_model = quantize_model(model)
 
-    # Print the dtype of the quantized model's parameters after quantization
-    print_after_quantization(quantizer.model)
+    # Print the dtype of the model's parameters AFTER quantization
+    print("\nAfter quantization:")
+    print_model_parameter_number(quantized_model)
+    print_model_size(quantized_model)
+    print_model_dtype(quantized_model)
 
-    # Report statistics
-    quantizer.report_statistics()
+    print_reduction_rate_mb(model, quantized_model) #before/after
+    print_reduction_rate_param(model, quantized_model) #before/after
+    print_reduction_times_mb(model, quantized_model) #before/after
+    print_reduction_times_param(model, quantized_model) #before/after
 
-    # Save the quantized model
-    quantizer.model.save_pretrained('bert-base-uncased-fp16')
+
+

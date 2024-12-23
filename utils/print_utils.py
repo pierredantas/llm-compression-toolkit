@@ -1,34 +1,30 @@
-import torch
-from utils.metrics import calculate_compression_ratio, calculate_reduction_rate, count_parameters, calculate_model_size, analyze_parameter_distribution
+from utils.metrics import (count_parameters, calculate_model_size, calculate_reduction_rate_mb, calculate_reduction_rate_param,
+                           calculate_reduction_times_mb, calculate_reduction_times_param)
 
-def print_before_quantization(model):
-    """
-    Print information about the model before quantization.
-    """
-    print("\nBefore quantization:")
+def print_model_dtype(model):
+    print("")
     for name, param in model.named_parameters():
         print(f"{name}: {param.dtype}")
-    print(f"\nParameter number: {count_parameters(model):,.0f}")
-    print(f"Model size: {calculate_model_size(model):,.0f} bytes")
 
-def print_after_quantization(model):
-    """
-    Print information about the model after quantization.
-    """
-    print("\nAfter quantization:")
-    for name, param in model.named_parameters():
-        print(f"{name}: {param.dtype}")
-    print(f"\nParameter number: {count_parameters(model):,.0f}")
-    print(f"Model size: {calculate_model_size(model):,.0f} bytes")
+def print_model_parameter_number(model):
+    print(f"\n--> Parameter number: {count_parameters(model):,.0f}")
 
-def print_statistics(original_size, quantized_size, reduction_rate):
-    """
-    Print model size statistics before and after quantization.
-    """
-    print("\nReduction Statistics")
-    print("-" * 50)
-    reduction_rate, reduction_times = reduction_rate
-    print(f"Original model size: {original_size:,.0f} bytes")
-    print(f"Quantized model size: {quantized_size:,.0f} bytes")
-    print(f"Reduction size rate: {reduction_rate:.4f}%")
-    print(f"Reduction size times: {reduction_times:.4f}x")
+def print_model_size(model):
+    print(f"\n--> Model size: {calculate_model_size(model):,.0f} bytes")
+
+def print_reduction_rate_mb(before_model, after_model):
+    print(f"\n--> Reduction size rate (@MB): {calculate_reduction_rate_mb(before_model, after_model):.4f}%")
+
+def print_reduction_rate_param(before_model, after_model):
+    print(f"--> Reduction parameters rate (@param): {calculate_reduction_rate_param(before_model, after_model):.4f}%")
+
+def print_reduction_times_mb(before_model, after_model):
+    print(f"\n--> Reduction times (@MB): {calculate_reduction_times_mb(before_model, after_model):.4f}x")
+
+def print_reduction_times_param(before_model, after_model):
+    print(f"--> Reduction times (@param): {calculate_reduction_times_param(before_model, after_model):.4f}x")
+
+
+
+
+

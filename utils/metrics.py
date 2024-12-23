@@ -1,67 +1,31 @@
-import torch
-
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters())
 
 def calculate_model_size(model):
-    """
-    Calculate the size of a model in megabytes (MB).
 
-    Parameters:
-        model (torch.nn.Module): PyTorch model.
-
-    Returns:
-        float: Model size in MB.
-    """
-    total_params = sum(param.numel() * param.element_size() for param in model.parameters())
-    return total_params / (1024 * 1024)
-
-def analyze_parameter_distribution(model):
-    """
-    Analyze the parameter distribution of a model.
-
-    Parameters:
-        model (torch.nn.Module): PyTorch model.
-
-    Prints:
-        Distribution details such as count of parameter types.
-    """
-    param_types = {}
+    param_size = 0
     for param in model.parameters():
-        dtype = param.dtype
-        param_types[dtype] = param_types.get(dtype, 0) + param.numel()
+        param_size += param.nelement() * param.element_size()
 
-    for dtype, count in param_types.items():
-        print(f"{dtype}: {count} parameters")
+    buffer_size = 0
+    for buffer in model.buffers():
+        buffer_size += buffer.nelement() * buffer.element_size()
 
-def calculate_compression_ratio(original_params: int, quantized_params: int) -> float:
-    """
-    Calculate the compression ratio between the original and quantized model.
+    size_all_mb = (param_size + buffer_size)
+    return size_all_mb
 
-    Parameters:
-    - original_params (int): Number of parameters in the original model.
-    - quantized_params (int): Number of parameters in the quantized model.
+def calculate_reduction_rate_mb(before_model, after_model):
+    reduction_rate_mb = ((calculate_model_size(before_model) - calculate_model_size(after_model)) / calculate_model_size(before_model)) * 100
+    return reduction_rate_mb
 
-    Returns:
-    - compression_ratio (float): Ratio of original to quantized parameters.
-    """
-    if quantized_params == 0:
-        raise ValueError("Quantized parameters cannot be zero.")
-    compression_ratio = original_params / quantized_params
-    return compression_ratio
+def calculate_reduction_rate_param(before_model, after_model):
+    param_reduction_rate = ((count_parameters(before_model) - count_parameters(after_model)) / count_parameters(before_model)) * 100
+    return param_reduction_rate
 
-def calculate_reduction_rate(original_size: int, quantized_size: int):
-    """
-    Calculate the size reduction rate and reduction factor.
+def calculate_reduction_times_mb(before_model, after_model):
+    reduction_times_mb = calculate_model_size(before_model)/ calculate_model_size(after_model)
+    return reduction_times_mb
 
-    Parameters:
-    - original_size (int): Size of the original model.
-    - quantized_size (int): Size of the quantized model.
-
-    Returns:
-    - reduction_rate (float): Percentage of size reduction.
-    - reduction_times (float): Size reduction factor.
-    """
-    reduction_rate = ((original_size - quantized_size) / original_size) * 100
-    reduction_times = original_size / quantized_size
-    return reduction_rate, reduction_times
+def calculate_reduction_times_param(before_model, after_model):
+    reduction_times_param = count_parameters(before_model)/ count_parameters(after_model)
+    return reduction_times_param
