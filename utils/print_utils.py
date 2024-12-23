@@ -13,16 +13,16 @@ def print_model_size(model):
     print(f"\n--> Model size: {calculate_model_size(model):,.0f} bytes")
 
 def print_reduction_rate_mb(before_model, after_model):
-    print(f"\n--> Reduction size rate (@MB): {calculate_reduction_rate_mb(before_model, after_model):.4f}%")
+    print(f"\n--> Reduction rate (@MB): {calculate_reduction_rate_mb(before_model, after_model):.4f}%")
 
 def print_reduction_rate_param(before_model, after_model):
-    print(f"--> Reduction parameters rate (@param): {calculate_reduction_rate_param(before_model, after_model):.4f}%")
+    print(f"--> Reduction rate (@parameters): {calculate_reduction_rate_param(before_model, after_model):.4f}%")
 
 def print_reduction_times_mb(before_model, after_model):
     print(f"\n--> Reduction times (@MB): {calculate_reduction_times_mb(before_model, after_model):.4f}x")
 
 def print_reduction_times_param(before_model, after_model):
-    print(f"--> Reduction times (@param): {calculate_reduction_times_param(before_model, after_model):.4f}x")
+    print(f"--> Reduction times (@parameters): {calculate_reduction_times_param(before_model, after_model):.4f}x")
 
 
 
